@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -15,9 +16,10 @@ import java.util.List;
 @Data @AllArgsConstructor @NoArgsConstructor
 public class Compte {
     @Id
-    private String id ;
+    private String id = UUID.randomUUID().toString(); ;
     private double solde ;
     private Date createdAt ;
+    @Enumerated(EnumType.STRING)
     private AccountStatus status;
     @ManyToOne
     private Client client ;
