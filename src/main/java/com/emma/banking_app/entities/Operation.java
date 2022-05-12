@@ -19,4 +19,5 @@ public class Operation {
     private OperationType type ;
     @ManyToOne
     private Compte compte ;
+    private String description ;
 }

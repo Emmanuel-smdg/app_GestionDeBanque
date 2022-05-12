@@ -14,9 +14,9 @@ import java.util.UUID;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "TYPE", length = 4)
 @Data @AllArgsConstructor @NoArgsConstructor
-public class Compte {
+public abstract class Compte {
     @Id
-    private String id = UUID.randomUUID().toString(); ;
+    private String id ; ;
     private double solde ;
     private Date createdAt ;
     @Enumerated(EnumType.STRING)

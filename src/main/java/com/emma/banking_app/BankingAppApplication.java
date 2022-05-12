@@ -6,9 +6,14 @@ import com.emma.banking_app.entities.CompteEpargne;
 import com.emma.banking_app.entities.Operation;
 import com.emma.banking_app.enums.AccountStatus;
 import com.emma.banking_app.enums.OperationType;
+import com.emma.banking_app.exceptions.ClientNotFoundException;
+import com.emma.banking_app.exceptions.CompteNotFoundException;
+import com.emma.banking_app.exceptions.SoldeIssufisantException;
 import com.emma.banking_app.repositories.ClientRepository;
 import com.emma.banking_app.repositories.CompteRepository;
 import com.emma.banking_app.repositories.OperationRepository;
+import com.emma.banking_app.services.BankAccountService;
+import com.emma.banking_app.services.BankAccountServiceImpl;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,8 +28,40 @@ public class BankingAppApplication {
     public static void main(String[] args) {
         SpringApplication.run(BankingAppApplication.class, args);
     }
-
     @Bean
+    CommandLineRunner commandLineRunner(BankAccountService bankAccountService){
+        return args -> {
+            Stream.of("Omar","Yasmine","Leyman","Inoussa","Abacar","Saoudata","Leaticia").forEach(name ->{
+                Client client = new Client();
+                client.setName(name);
+                client.setEmail(name + "@gmail.com");
+                bankAccountService.saveClient(client); });
+
+            bankAccountService.listClient().forEach(clt->{
+                try {
+                    bankAccountService.saveCurrentAccount(Math.random()*750000,Math.random()*7400, clt.getId());
+                    bankAccountService.saveEpargneAccount(Math.random()*800000,5.5, clt.getId());
+                    bankAccountService.listeCompte().forEach(cpte->{
+                        for (int i=0; i < 2 ; i++){
+                            try {
+                                bankAccountService.credit(cpte.getId(),274000+Math.random()*9875,"credit ");
+                                bankAccountService.debit(cpte.getId(), 3000+Math.random()*1000,"debit");
+                            } catch (CompteNotFoundException | SoldeIssufisantException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+                    });
+                } catch (ClientNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+            });
+
+        };
+    }
+
+    //@Bean
     CommandLineRunner start(ClientRepository clientRepository, OperationRepository operationRepository,
                             CompteRepository compteRepository){
         return args -> {
