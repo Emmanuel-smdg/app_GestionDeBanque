@@ -1,5 +1,8 @@
 package com.emma.banking_app;
 
+import com.emma.banking_app.dtos.ClientDto;
+import com.emma.banking_app.dtos.CompteCourantDto;
+import com.emma.banking_app.dtos.CompteEpargneDto;
 import com.emma.banking_app.entities.Client;
 import com.emma.banking_app.entities.CompteCourant;
 import com.emma.banking_app.entities.CompteEpargne;
@@ -32,10 +35,10 @@ public class BankingAppApplication {
     CommandLineRunner commandLineRunner(BankAccountService bankAccountService){
         return args -> {
             Stream.of("Omar","Yasmine","Leyman","Inoussa","Abacar","Saoudata","Leaticia").forEach(name ->{
-                Client client = new Client();
-                client.setName(name);
-                client.setEmail(name + "@gmail.com");
-                bankAccountService.saveClient(client); });
+                ClientDto clientDto = new ClientDto();
+                clientDto.setName(name);
+                clientDto.setEmail(name + "@gmail.com");
+                bankAccountService.saveClient(clientDto); });
 
             bankAccountService.listClient().forEach(clt->{
                 try {
@@ -44,8 +47,12 @@ public class BankingAppApplication {
                     bankAccountService.listeCompte().forEach(cpte->{
                         for (int i=0; i < 2 ; i++){
                             try {
-                                bankAccountService.credit(cpte.getId(),274000+Math.random()*9875,"credit ");
-                                bankAccountService.debit(cpte.getId(), 3000+Math.random()*1000,"debit");
+                                String cpteId;
+                                if(cpte instanceof CompteEpargneDto){
+                                    cpteId = ((CompteEpargneDto) cpte).getId();
+                                }else cpteId = ((CompteCourantDto) cpte).getId();
+                                bankAccountService.credit(cpteId,274000+Math.random()*9875,"credit ");
+                                bankAccountService.debit(cpteId, 3000+Math.random()*1000,"debit");
                             } catch (CompteNotFoundException | SoldeIssufisantException e) {
                                 e.printStackTrace();
                             }
