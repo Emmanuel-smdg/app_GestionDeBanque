@@ -203,4 +203,11 @@ public class BankAccountServiceImpl implements BankAccountService{
 
     }
 
+    @Override
+    public List<ClientDto> searchClients(String motcle) {
+        List<Client> clients = clientRepository.searchClient(motcle);
+        List<ClientDto> clientDtos = clients.stream().map(clt -> mapperDto.fromClient(clt)).collect(Collectors.toList());
+        return clientDtos;
+    }
+
 }
